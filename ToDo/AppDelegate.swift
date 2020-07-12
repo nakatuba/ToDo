@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let key = "startUpCount"
         UserDefaults.standard.set(UserDefaults.standard.integer(forKey: key) + 1, forKey: key)
         let count = UserDefaults.standard.integer(forKey: key)
-        if count % 20 == 0 {
+        if count % 10 == 0 {
             SKStoreReviewController.requestReview()
         }
         

@@ -11,13 +11,6 @@ import RealmSwift
 import M13Checkbox
 
 class TableViewController: UITableViewController {
-
-    let accessoryView = UIView()
-    let whiteButton = UIButton()
-    let cyanButton = UIButton()
-    let magentaButton = UIButton()
-    let yellowButton = UIButton()
-    var color = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,25 +29,19 @@ class TableViewController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! TableViewCell
         let realm = try! Realm()
         let todoObjects = realm.objects(ToDo.self)
-        
-        switch todoObjects[indexPath.row].color {
-        case "White":
-            cell.backgroundColor = .secondarySystemGroupedBackground
-        default:
-            cell.backgroundColor = UIColor(named: todoObjects[indexPath.row].color)
-        }
+        cell.backgroundColor = UIColor(named: todoObjects[indexPath.row].color)
         
         if todoObjects[indexPath.row].checked {
             cell.checkbox.checkState = .checked
-            let attributeString =  NSMutableAttributedString(string: todoObjects[indexPath.row].title)
-            attributeString.addAttribute(.strikethroughStyle, value: 2, range: NSMakeRange(0, attributeString.length))
-            cell.textLabel?.attributedText = attributeString
+            let attributedString = NSAttributedString(string: todoObjects[indexPath.row].title,
+                                                      attributes: [.strikethroughStyle: NSUnderlineStyle.thick.rawValue])
+            cell.textLabel?.attributedText = attributedString
             cell.textLabel?.textColor = .systemGray
         } else {
             cell.checkbox.checkState = .unchecked
             cell.textLabel?.attributedText = nil
             cell.textLabel?.text = todoObjects[indexPath.row].title
-            if cell.backgroundColor == UIColor.secondarySystemGroupedBackground {
+            if cell.backgroundColor == UIColor(named: "White") {
                 cell.textLabel?.textColor = .label
             } else {
                 cell.textLabel?.textColor = .black
@@ -92,7 +79,7 @@ class TableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let realm = try! Realm()
         let todoObjects = realm.objects(ToDo.self)
-        color = todoObjects[indexPath.row].color
+        AccessoryView.shared.color = todoObjects[indexPath.row].color
         
         let alert = UIAlertController(title: "ToDoの編集", message: nil, preferredStyle: .alert)
         let changeAction = UIAlertAction(title: "変更", style: .default, handler: { _ in
@@ -100,7 +87,7 @@ class TableViewController: UITableViewController {
             guard let title = textField.text, !title.isEmpty else { return }
             try! realm.write {
                 todoObjects[indexPath.row].title = title
-                todoObjects[indexPath.row].color = self.color
+                todoObjects[indexPath.row].color = AccessoryView.shared.color
             }
             tableView.reloadData()
         })
@@ -109,80 +96,13 @@ class TableViewController: UITableViewController {
         alert.addTextField(configurationHandler: { textField in
             textField.text = tableView.cellForRow(at: indexPath)?.textLabel?.text
             textField.returnKeyType = .done
-            
-            self.accessoryView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 60)
-            self.accessoryView.backgroundColor = .systemGroupedBackground
-            
-            self.whiteButton.frame = CGRect(x: 10, y: 10, width: 40, height: 40)
-            self.whiteButton.backgroundColor = .secondarySystemGroupedBackground
-            
-            self.cyanButton.frame = CGRect(x: 60, y: 10, width: 40, height: 40)
-            self.cyanButton.backgroundColor = UIColor(named: "Cyan")
-            
-            self.magentaButton.frame = CGRect(x: 110, y: 10, width: 40, height: 40)
-            self.magentaButton.backgroundColor = UIColor(named: "Magenta")
-            
-            self.yellowButton.frame = CGRect(x: 160, y: 10, width: 40, height: 40)
-            self.yellowButton.backgroundColor = UIColor(named: "Yellow")
-            
-            for button in [self.whiteButton, self.cyanButton, self.magentaButton, self.yellowButton] {
-                button.layer.cornerRadius = button.frame.width / 2
-                button.layer.borderWidth = 2.0
-                button.addTarget(self, action: #selector(self.didTapColorButton(_:)), for: .touchUpInside)
-                if button.backgroundColor == tableView.cellForRow(at: indexPath)?.backgroundColor {
-                    button.layer.borderColor = UIColor.systemBlue.cgColor
-                    button.setImage(.checkmark, for: .normal)
-                } else {
-                    button.layer.borderColor = UIColor.label.cgColor
-                    button.setImage(nil, for: .normal)
-                }
-                self.accessoryView.addSubview(button)
-            }
-            textField.inputAccessoryView = self.accessoryView
+            guard let selectedButtonColor = UIColor(named: todoObjects[indexPath.row].color) else { return }
+            textField.inputAccessoryView = AccessoryView.shared.setAccessoryView(selectedButtonColor)
         })
         alert.addAction(changeAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    @objc func didTapColorButton(_ sender: UIButton) {
-        switch sender {
-        case whiteButton:
-            color = "White"
-            whiteButton.layer.borderColor = UIColor.systemBlue.cgColor
-            whiteButton.setImage(.checkmark, for: .normal)
-            for button in [cyanButton, magentaButton, yellowButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        case cyanButton:
-            color = "Cyan"
-            cyanButton.layer.borderColor = UIColor.systemBlue.cgColor
-            cyanButton.setImage(.checkmark, for: .normal)
-            for button in [whiteButton, magentaButton, yellowButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        case magentaButton:
-            color = "Magenta"
-            magentaButton.layer.borderColor = UIColor.systemBlue.cgColor
-            magentaButton.setImage(.checkmark, for: .normal)
-            for button in [whiteButton, cyanButton, yellowButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        case yellowButton:
-            color = "Yellow"
-            yellowButton.layer.borderColor = UIColor.systemBlue.cgColor
-            yellowButton.setImage(.checkmark, for: .normal)
-            for button in [whiteButton, cyanButton, magentaButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        default:
-            break
-        }
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {

@@ -11,13 +11,7 @@ import RealmSwift
 import Firebase
 
 class MainViewController: UIViewController {
-
-    let accessoryView = UIView()
-    let whiteButton = UIButton()
-    let cyanButton = UIButton()
-    let magentaButton = UIButton()
-    let yellowButton = UIButton()
-    var color = ""
+    
     @IBOutlet weak var addButton: UIButton!
     @IBOutlet weak var deleteButton: UIButton!
     @IBOutlet weak var checkButton: UIBarButtonItem!
@@ -131,15 +125,14 @@ class MainViewController: UIViewController {
     }
     
     @IBAction func didTapAddButton(_ sender: Any) {
-        color = "White"
-        
+        AccessoryView.shared.color = "White"
         let alert = UIAlertController(title: "ToDoの追加", message: nil, preferredStyle: .alert)
         let addAction = UIAlertAction(title: "追加", style: .default, handler: { _ in
             let textField = alert.textFields![0]
             guard let title = textField.text, !title.isEmpty else { return }
             let todo = ToDo()
             todo.title = title
-            todo.color = self.color
+            todo.color = AccessoryView.shared.color
             let realm = try! Realm()
             try! realm.write {
                 realm.add(todo)
@@ -151,79 +144,12 @@ class MainViewController: UIViewController {
         
         alert.addTextField(configurationHandler: { textField in
             textField.returnKeyType = .done
-            
-            self.accessoryView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: 60)
-            self.accessoryView.backgroundColor = .systemGroupedBackground
-            
-            self.whiteButton.frame = CGRect(x: 10, y: 10, width: 40, height: 40)
-            self.whiteButton.backgroundColor = .secondarySystemGroupedBackground
-            
-            self.cyanButton.frame = CGRect(x: 60, y: 10, width: 40, height: 40)
-            self.cyanButton.backgroundColor = UIColor(named: "Cyan")
-            
-            self.magentaButton.frame = CGRect(x: 110, y: 10, width: 40, height: 40)
-            self.magentaButton.backgroundColor = UIColor(named: "Magenta")
-            
-            self.yellowButton.frame = CGRect(x: 160, y: 10, width: 40, height: 40)
-            self.yellowButton.backgroundColor = UIColor(named: "Yellow")
-            
-            for button in [self.whiteButton, self.cyanButton, self.magentaButton, self.yellowButton] {
-                button.addTarget(self, action: #selector(self.didTapColorButton(_:)), for: .touchUpInside)
-                button.layer.cornerRadius = button.frame.width / 2
-                button.layer.borderWidth = 2.0
-                if button == self.whiteButton {
-                    button.layer.borderColor = UIColor.systemBlue.cgColor
-                    button.setImage(.checkmark, for: .normal)
-                } else {
-                    button.layer.borderColor = UIColor.label.cgColor
-                    button.setImage(nil, for: .normal)
-                }
-                self.accessoryView.addSubview(button)
-            }
-            textField.inputAccessoryView = self.accessoryView
+            guard let whiteButtonColor = UIColor(named: "White") else { return }
+            textField.inputAccessoryView = AccessoryView.shared.setAccessoryView(whiteButtonColor)
         })
         alert.addAction(addAction)
         alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
-    }
-    
-    @objc func didTapColorButton(_ sender: UIButton) {
-        switch sender {
-        case whiteButton:
-            color = "White"
-            whiteButton.layer.borderColor = UIColor.systemBlue.cgColor
-            whiteButton.setImage(.checkmark, for: .normal)
-            for button in [cyanButton, magentaButton, yellowButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        case cyanButton:
-            color = "Cyan"
-            cyanButton.layer.borderColor = UIColor.systemBlue.cgColor
-            cyanButton.setImage(.checkmark, for: .normal)
-            for button in [whiteButton, magentaButton, yellowButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        case magentaButton:
-            color = "Magenta"
-            magentaButton.layer.borderColor = UIColor.systemBlue.cgColor
-            magentaButton.setImage(.checkmark, for: .normal)
-            for button in [whiteButton, cyanButton, yellowButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        case yellowButton:
-            color = "Yellow"
-            yellowButton.layer.borderColor = UIColor.systemBlue.cgColor
-            yellowButton.setImage(.checkmark, for: .normal)
-            for button in [whiteButton, cyanButton, magentaButton] {
-                button.layer.borderColor = UIColor.label.cgColor
-                button.setImage(nil, for: .normal)
-            }
-        default:
-            break
-        }
     }
     
     @IBAction func didTapDeleteButton(_ sender: Any) {
