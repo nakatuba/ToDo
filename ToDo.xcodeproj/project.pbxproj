@@ -73,17 +73,41 @@
 			children = (
 				659E9EB42419FE6600761F20 /* AppDelegate.swift */,
 				659E9EB62419FE6600761F20 /* SceneDelegate.swift */,
-				659E9EB82419FE6600761F20 /* MainViewController.swift */,
-				659E9ECE241B438300761F20 /* TableViewController.swift */,
-				659E9ED0241D163000761F20 /* TableViewCell.swift */,
-				659E9EBA2419FE6600761F20 /* Main.storyboard */,
+				65DBE4A325A07C6800D675EF /* Models */,
+				65DBE4A425A07C7500D675EF /* Views */,
+				65DBE4A525A07C8800D675EF /* Controllers */,
 				659E9EBD2419FE6800761F20 /* Assets.xcassets */,
 				659E9EBF2419FE6800761F20 /* LaunchScreen.storyboard */,
 				659E9EC22419FE6800761F20 /* Info.plist */,
 				6543CCC42423BDB30059EB3C /* GoogleService-Info.plist */,
-				659E9ED2241EC90100761F20 /* ToDo.swift */,
 			);
 			path = ToDo;
+			sourceTree = "<group>";
+		};
+		65DBE4A325A07C6800D675EF /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				659E9ED2241EC90100761F20 /* ToDo.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		65DBE4A425A07C7500D675EF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				659E9EBA2419FE6600761F20 /* Main.storyboard */,
+				659E9ED0241D163000761F20 /* TableViewCell.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		65DBE4A525A07C8800D675EF /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				659E9EB82419FE6600761F20 /* MainViewController.swift */,
+				659E9ECE241B438300761F20 /* TableViewController.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		747174879866DCB1E74A89A3 /* Frameworks */ = {
